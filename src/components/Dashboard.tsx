@@ -158,8 +158,8 @@ export function Dashboard() {
 
           <main>{renderPage()}</main>
 
-          {/* Dev Tools */}
-          <DevTools onDataSeeded={handleDataSeeded} />
+          {/* Dev Tools - alleen in development mode */}
+          {import.meta.env.DEV && <DevTools onDataSeeded={handleDataSeeded} />}
         </div>
       </div>
     </div>
