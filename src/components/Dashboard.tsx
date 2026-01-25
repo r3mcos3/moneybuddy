@@ -15,7 +15,6 @@ type Page = 'dashboard' | 'accounts' | 'transactions' | 'recurring' | 'analytics
 export function Dashboard() {
   const [darkMode, setDarkMode] = useLocalStorage('darkMode', false)
   const [currentPage, setCurrentPage] = useState<Page>('dashboard')
-  const [refreshKey, setRefreshKey] = useState(0)
   const { getTotalBalance, accounts, refresh: refreshAccounts } = useAccounts()
   const { transactions, refresh: refreshTransactions } = useTransactions()
 
@@ -26,7 +25,6 @@ export function Dashboard() {
     // Refresh all data
     refreshAccounts()
     refreshTransactions()
-    setRefreshKey(prev => prev + 1)
   }
 
   const renderPage = () => {

@@ -86,7 +86,6 @@ export function useBudgets() {
     const budget = budgets.find(b => b.id === budgetId)
     if (!budget || !user) return 0
 
-    const startDate = new Date(budget.start_date)
     const endDate = budget.end_date ? new Date(budget.end_date) : new Date()
 
     const { data } = await supabase
