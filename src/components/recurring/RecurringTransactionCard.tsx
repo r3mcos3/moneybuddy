@@ -9,6 +9,7 @@ interface RecurringTransactionCardProps {
   onDelete: (id: string) => void
   onToggleActive: (id: string, active: boolean) => void
   onProcess?: (id: string) => Promise<void>
+  isProcessing?: boolean
 }
 
 export function RecurringTransactionCard({
@@ -20,6 +21,7 @@ export function RecurringTransactionCard({
   onDelete,
   onToggleActive,
   onProcess,
+  isProcessing = false,
 }: RecurringTransactionCardProps) {
   const isIncome = recurring.amount > 0
 
@@ -106,9 +108,10 @@ export function RecurringTransactionCard({
         {isDue && recurring.active && onProcess && (
           <button
             onClick={() => onProcess(recurring.id)}
-            className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-semibold transition-colors flex items-center gap-1"
+            disabled={isProcessing}
+            className="px-4 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white rounded-md text-sm font-semibold transition-colors flex items-center gap-1"
           >
-            ✓ Verwerk
+            {isProcessing ? '⏳' : '✓'} Verwerk
           </button>
         )}
         <button

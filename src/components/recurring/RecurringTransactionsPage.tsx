@@ -209,6 +209,7 @@ export function RecurringTransactionsPage() {
                 onDelete={deleteRecurringTransaction}
                 onToggleActive={handleToggleActive}
                 onProcess={handleProcessSingle}
+                isProcessing={processingSingle === recurring.id}
               />
             )
           })}
@@ -236,6 +237,7 @@ export function RecurringTransactionsPage() {
                 onDelete={deleteRecurringTransaction}
                 onToggleActive={handleToggleActive}
                 onProcess={handleProcessSingle}
+                isProcessing={processingSingle === recurring.id}
               />
             )
           })}
