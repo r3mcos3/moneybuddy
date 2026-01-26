@@ -184,12 +184,25 @@ Auth methods available via `useAuth()` hook:
 
 **Recurring Transactions** (`/recurring`)
 - Create recurring income and expenses (vaste lasten)
+- Set specific day of month (1-31) instead of full date
 - Frequency options: weekly, every 4 weeks, monthly, yearly
 - Manual processing with one-click batch creation
+- Process button always visible (disabled when nothing to process)
+- Transactions get correct day-of-month when processed
 - Active/inactive status toggle
-- Automatic next due date calculation
-- Visual indicators for due transactions
+- Visual indicators for due transactions (not processed this month)
+- Shows last processed date
 - Edit and delete recurring transactions
+
+**Monthly Overview** (`/monthly`)
+- Navigate between months with prev/next buttons
+- Dropdown to jump to any month with transactions
+- Summary cards: income, expenses, net balance
+- Detailed stats: transaction count, average spending, savings percentage
+- Estimated recurring expenses preview
+- Calculation of remaining balance after recurring costs
+- Visual progress bar showing spending vs income
+- Color-coded cards (green for surplus, orange for deficit)
 
 **Analytics** (`/analytics`)
 - Total income, expenses, and transaction count overview
