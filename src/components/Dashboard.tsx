@@ -8,9 +8,10 @@ import { AccountsPage } from './accounts/AccountsPage'
 import { TransactionsPage } from './transactions/TransactionsPage'
 import { RecurringTransactionsPage } from './recurring/RecurringTransactionsPage'
 import { AnalyticsPage } from './analytics/AnalyticsPage'
+import { MonthlyOverviewPage } from './monthly/MonthlyOverviewPage'
 import { DevTools } from './DevTools'
 
-type Page = 'dashboard' | 'accounts' | 'transactions' | 'recurring' | 'analytics'
+type Page = 'dashboard' | 'accounts' | 'transactions' | 'recurring' | 'analytics' | 'monthly'
 
 export function Dashboard() {
   const [darkMode, setDarkMode] = useLocalStorage('darkMode', false)
@@ -37,6 +38,8 @@ export function Dashboard() {
         return <RecurringTransactionsPage />
       case 'analytics':
         return <AnalyticsPage />
+      case 'monthly':
+        return <MonthlyOverviewPage />
       case 'dashboard':
       default:
         return (
@@ -63,24 +66,34 @@ export function Dashboard() {
                 onClick={() => setCurrentPage('accounts')}
               />
               <StatCard
+                title="Maandoverzicht"
+                emoji="📅"
+                description="Bekijk per maand"
+                color="blue"
+                onClick={() => setCurrentPage('monthly')}
+              />
+              <StatCard
                 title="Terugkerend"
                 emoji="🔄"
                 description="Vaste lasten en inkomsten"
-                color="blue"
+                color="green"
                 onClick={() => setCurrentPage('recurring')}
               />
               <StatCard
                 title="Transacties"
                 emoji="💰"
                 description="Bekijk alle transacties"
-                color="green"
+                color="purple"
                 onClick={() => setCurrentPage('transactions')}
               />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <StatCard
                 title="Analytics"
                 emoji="📈"
                 description="Inzicht in je uitgaven"
-                color="purple"
+                color="orange"
                 onClick={() => setCurrentPage('analytics')}
               />
             </div>
