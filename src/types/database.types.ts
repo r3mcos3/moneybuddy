@@ -64,6 +64,7 @@ export interface RecurringTransaction {
   description: string
   amount: number
   frequency: 'weekly' | 'every_4_weeks' | 'monthly' | 'yearly'
+  day_of_month: number
   start_date: string
   last_processed_date?: string
   next_due_date: string

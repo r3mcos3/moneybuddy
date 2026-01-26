@@ -14,6 +14,7 @@ export function RecurringTransactionsPage() {
     updateRecurringTransaction,
     deleteRecurringTransaction,
     processRecurringTransactions,
+    processSingleRecurring,
     getDueCount,
   } = useRecurringTransactions()
   const { accounts } = useAccounts()
@@ -23,6 +24,7 @@ export function RecurringTransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingRecurring, setEditingRecurring] = useState<any>(null)
   const [processing, setProcessing] = useState(false)
+  const [processingSingle, setProcessingSingle] = useState<string | null>(null)
 
   const handleAddRecurring = async (data: any) => {
     await addRecurringTransaction(
@@ -31,7 +33,7 @@ export function RecurringTransactionsPage() {
       data.description,
       data.amount,
       data.frequency,
-      data.startDate
+      data.dayOfMonth
     )
   }
 
@@ -49,6 +51,24 @@ export function RecurringTransactionsPage() {
 
   const handleToggleActive = async (id: string, active: boolean) => {
     await updateRecurringTransaction(id, { active })
+  }
+
+  const handleProcessSingle = async (id: string) => {
+    setProcessingSingle(id)
+    try {
+      const result = await processSingleRecurring(id)
+      if (result.success) {
+        refreshTransactions()
+        // Optioneel: success feedback
+      } else {
+        const errorMessage = typeof result.error === 'string'
+          ? result.error
+          : '❌ Fout bij verwerken van transactie'
+        alert(errorMessage)
+      }
+    } finally {
+      setProcessingSingle(null)
+    }
   }
 
   const handleProcess = async () => {
@@ -123,24 +143,24 @@ export function RecurringTransactionsPage() {
           + Nieuwe Terugkerende Transactie
         </button>
 
-        {dueCount > 0 && (
-          <button
-            onClick={handleProcess}
-            disabled={processing}
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold rounded-lg transition-colors shadow-md flex items-center gap-2"
-          >
-            {processing ? (
-              <>⏳ Verwerken...</>
-            ) : (
-              <>
-                🔄 Verwerk Transacties
+        <button
+          onClick={handleProcess}
+          disabled={processing || dueCount === 0}
+          className="px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors shadow-md flex items-center gap-2"
+        >
+          {processing ? (
+            <>⏳ Verwerken...</>
+          ) : (
+            <>
+              🔄 Verwerk Transacties
+              {dueCount > 0 && (
                 <span className="bg-white text-green-600 px-2 py-0.5 rounded-full text-sm font-bold">
                   {dueCount}
                 </span>
-              </>
-            )}
-          </button>
-        )}
+              )}
+            </>
+          )}
+        </button>
       </div>
 
       {/* Info card */}
@@ -188,6 +208,7 @@ export function RecurringTransactionsPage() {
                 onEdit={openEditModal}
                 onDelete={deleteRecurringTransaction}
                 onToggleActive={handleToggleActive}
+                onProcess={handleProcessSingle}
               />
             )
           })}
@@ -214,6 +235,7 @@ export function RecurringTransactionsPage() {
                 onEdit={openEditModal}
                 onDelete={deleteRecurringTransaction}
                 onToggleActive={handleToggleActive}
+                onProcess={handleProcessSingle}
               />
             )
           })}

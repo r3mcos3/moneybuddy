@@ -12,7 +12,7 @@ interface RecurringTransactionModalProps {
     description: string
     amount: number
     frequency: 'weekly' | 'every_4_weeks' | 'monthly' | 'yearly'
-    startDate: string
+    dayOfMonth: number
   }) => Promise<void>
   recurring?: RecurringTransaction
 }
@@ -32,7 +32,7 @@ export function RecurringTransactionModal({
     description: '',
     amount: '',
     frequency: 'monthly' as 'weekly' | 'every_4_weeks' | 'monthly' | 'yearly',
-    startDate: new Date().toISOString().split('T')[0],
+    dayOfMonth: 1,
     isIncome: false,
   })
 
@@ -45,7 +45,7 @@ export function RecurringTransactionModal({
         description: recurring.description,
         amount: Math.abs(recurring.amount).toString(),
         frequency: recurring.frequency,
-        startDate: recurring.start_date,
+        dayOfMonth: recurring.day_of_month,
         isIncome: category?.type === 'income',
       })
     } else {
@@ -55,7 +55,7 @@ export function RecurringTransactionModal({
         description: '',
         amount: '',
         frequency: 'monthly',
-        startDate: new Date().toISOString().split('T')[0],
+        dayOfMonth: 1,
         isIncome: false,
       })
     }
@@ -76,7 +76,7 @@ export function RecurringTransactionModal({
       description: formData.description,
       amount: formData.isIncome ? amount : -amount,
       frequency: formData.frequency,
-      startDate: formData.startDate,
+      dayOfMonth: formData.dayOfMonth,
     })
 
     onClose()
@@ -213,18 +213,26 @@ export function RecurringTransactionModal({
             </select>
           </div>
 
-          {/* Start Date */}
+          {/* Day of Month */}
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
-              Startdatum
+              Dag van de maand
             </label>
-            <input
-              type="date"
-              value={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+            <select
+              value={formData.dayOfMonth}
+              onChange={(e) => setFormData({ ...formData, dayOfMonth: parseInt(e.target.value) })}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               required
-            />
+            >
+              {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
+                <option key={day} value={day}>
+                  {day === 1 ? '1ste' : day === 2 ? '2de' : day === 3 ? '3de' : `${day}ste`} van de maand
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              💡 Bij verwerken krijgt de transactie deze dag in de huidige maand
+            </p>
           </div>
 
           {/* Buttons */}

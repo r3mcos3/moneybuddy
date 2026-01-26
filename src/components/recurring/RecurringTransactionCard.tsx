@@ -8,6 +8,7 @@ interface RecurringTransactionCardProps {
   onEdit: (recurring: RecurringTransaction) => void
   onDelete: (id: string) => void
   onToggleActive: (id: string, active: boolean) => void
+  onProcess?: (id: string) => Promise<void>
 }
 
 export function RecurringTransactionCard({
@@ -18,9 +19,22 @@ export function RecurringTransactionCard({
   onEdit,
   onDelete,
   onToggleActive,
+  onProcess,
 }: RecurringTransactionCardProps) {
   const isIncome = recurring.amount > 0
-  const isDue = new Date(recurring.next_due_date) <= new Date()
+
+  // Check if due (not processed this month yet)
+  const now = new Date()
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+
+  let isDue = false
+  if (!recurring.last_processed_date) {
+    isDue = true
+  } else {
+    const lastProcessed = new Date(recurring.last_processed_date)
+    const lastProcessedMonth = `${lastProcessed.getFullYear()}-${String(lastProcessed.getMonth() + 1).padStart(2, '0')}`
+    isDue = lastProcessedMonth < currentMonth
+  }
 
   const frequencyLabels = {
     weekly: 'Wekelijks',
@@ -29,12 +43,11 @@ export function RecurringTransactionCard({
     yearly: 'Jaarlijks',
   }
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('nl-NL', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    })
+  const getDayLabel = (day: number) => {
+    if (day === 1) return '1ste'
+    if (day === 2) return '2de'
+    if (day === 3) return '3de'
+    return `${day}ste`
   }
 
   return (
@@ -68,8 +81,14 @@ export function RecurringTransactionCard({
               {categoryName} • {accountName}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              {frequencyLabels[recurring.frequency]} • Volgende: {formatDate(recurring.next_due_date)}
+              {frequencyLabels[recurring.frequency]}
+              {recurring.day_of_month && ` • ${getDayLabel(recurring.day_of_month)} van de maand`}
             </p>
+            {recurring.last_processed_date && (
+              <p className="text-xs text-gray-400 dark:text-gray-600 mt-0.5">
+                Laatste keer: {new Date(recurring.last_processed_date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
+              </p>
+            )}
           </div>
         </div>
 
@@ -84,6 +103,14 @@ export function RecurringTransactionCard({
 
       {/* Actions */}
       <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+        {isDue && recurring.active && onProcess && (
+          <button
+            onClick={() => onProcess(recurring.id)}
+            className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-semibold transition-colors flex items-center gap-1"
+          >
+            ✓ Verwerk
+          </button>
+        )}
         <button
           onClick={() => onToggleActive(recurring.id, !recurring.active)}
           className={`flex-1 px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
